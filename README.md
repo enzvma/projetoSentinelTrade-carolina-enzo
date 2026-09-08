@@ -21,5 +21,3 @@ A Orion Capital contratou sua equipe para especificar e modelar o SentinelTrade,
 - Operar com mecanismos de recuperação, indisponibilidade controlada e prevenção de duplicidade de ordens.
 
 Não é necessário integrar com uma bolsa real ou utilizar dinheiro real. O projeto deverá operar com ativos, contas e cotações simuladas.
-
-## Requisitos Funcionais
