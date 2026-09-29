@@ -1,6 +1,10 @@
 # SentinelTrade — Requisitos do Sistema
 
+Segue abaixo a resposta esperada para a identificação de requisitos funcionais e não-funcionais com base no case da corretora fictícia Orion Capital.
+
 ## 1. Requisitos Funcionais (RF)
+
+Definem as funcionalidades específicas que o sistema deve realizar.
 
 | ID | RF | Descrição |
 |----|----|-----------|
@@ -19,6 +23,8 @@
 | RF-13 | Cálculo de Posição Financeira | Atualizar automaticamente o saldo e a carteira do investidor após cada operação. |
 
 ## 2. Requisitos Não-Funcionais (RNF)
+
+Estabelecem restrições e critérios de qualidade, desempenho e segurança para o sistema.
 
 ### 2.1 Segurança
 
