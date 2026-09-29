@@ -21,3 +21,15 @@ A Orion Capital contratou sua equipe para especificar e modelar o SentinelTrade,
 - Operar com mecanismos de recuperação, indisponibilidade controlada e prevenção de duplicidade de ordens.
 
 Não é necessário integrar com uma bolsa real ou utilizar dinheiro real. O projeto deverá operar com ativos, contas e cotações simuladas.
+
+## Visão do projeto
+O **SentinelTrade** é uma plataforma distribuída, segura e tolerante a falhas para negociação de **ações, ETFs e FIIs**, encomendada pela corretora fictícia **Orion Capital**. Ela substitui sistemas pouco integrados por um fluxo único e auditável:
+
+`cotação → validação (saldo, posição, risco, mercado) → ordem → bolsa simulada → execução → posição → notificação → auditoria`
+
+Principais objetivos: **nenhuma ordem duplicada, nenhuma ordem aceita perdida, nenhuma operação sem rastro auditável**.
+
+### Escopo
+Dentro: autenticação com MFA, cadastro de investidores, ativos e limites, cotações, ordens (compra, venda, alteração, cancelamento), validações, integração com bolsa simulada, ciclo de vida da ordem, carteira/saldo, histórico, notificações, auditoria imutável.
+
+Fora: bolsa real, dinheiro real, liquidação/custódia real, derivativos e renda fixa, análise gráfica/recomendação de investimentos.
