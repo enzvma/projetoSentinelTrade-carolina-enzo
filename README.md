@@ -1,16 +1,18 @@
 # SentinelTrade
-Trabalho Projeto de Software
+Trabalho Semestral - Projeto de Software
 
 ## Integrantes
 - Carolina Yamada - R.A.: 10741647
 - Enzo Vasconcellos - R.A.: 10736817
 
 ## Contexto do Problema
+
 A corretora fictícia Orion Capital opera uma plataforma digital de negociação de ações, ETFs e fundos imobiliários. Atualmente, suas operações dependem de sistemas pouco integrados, dificultando a rastreabilidade das ordens, o controle de risco e a auditoria.
 
 ## Requisitos do Sistema
 
 A Orion Capital contratou a nossa equipe para especificar e modelar o SentinelTrade, uma plataforma que deverá:
+
 - Autenticar usuários com MFA;
 - Manter dados de investidores, contas, carteiras, ativos e limites financeiros;
 - Receber cotações em tempo quase real por meio de um provedor externo;
@@ -24,7 +26,7 @@ A Orion Capital contratou a nossa equipe para especificar e modelar o SentinelTr
 
 Observação: Não é necessário integrar com uma bolsa real ou utilizar dinheiro real. O projeto deverá operar com ativos, contas e cotações simuladas.
 
-## Visão do projeto
+## Visão do Projeto
 
 O **SentinelTrade** é uma plataforma distribuída, segura e tolerante a falhas para negociação de **ações, ETFs e FIIs**, encomendada pela corretora fictícia **Orion Capital**. Ela substitui sistemas pouco integrados por um fluxo único e auditável:
 
