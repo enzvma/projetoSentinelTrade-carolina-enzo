@@ -10,6 +10,7 @@ Na terminologia da UML, qualquer elemento externo ao sistema que interage com o 
 |----|----|-----------|
 | **Investidor** | Ator Principal | Usuário que acessa a plataforma para consultar carteira, saldo e cotações, além de enviar, cancelar e acompanhar ordens. |
 | **Administrador/Gestor** | Ator Interno | Responsável pela administração de usuários, contas, limites financeiros e acompanhamento operacional. |
+| **Auditor** | Ator Interno | Consulta a trilha de auditoria, sem poder de alteração sobre os registros. |
 | **Provedor de Cotações** | Sistema Externo | Sistema externo que fornece cotações dos ativos em tempo quase real. |
 | **Bolsa/Corretora Simulada** | Sistema Externo | Sistema externo para o qual o SentinelTrade transmite as ordens e do qual recebe informações sobre execução, rejeição ou cancelamento. |
 | **Serviço de Notificação** | Sistema Externo | Serviço responsável por enviar notificações ao investidor sobre execução, rejeição, cancelamento ou falha das ordens. |
