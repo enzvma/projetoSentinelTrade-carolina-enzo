@@ -38,7 +38,7 @@ Definem as funcionalidades específicas que o sistema deve realizar.
 
 Estabelecem restrições e critérios de qualidade, desempenho e segurança para o sistema.
 
-### 2.1 Segurança
+### 3.1 Segurança
 
 | ID | RNF | Descrição |
 |----|-----|-----------|
@@ -54,7 +54,7 @@ Estabelecem restrições e critérios de qualidade, desempenho e segurança para
 | RNF-10 | Criptografia em Trânsito e Repouso | Dados sensíveis são criptografados tanto enquanto trafegam quanto enquanto armazenados. |
 | RNF-11 | Rate Limiting | O sistema limita tentativas de login e envio de ordens em curto intervalo de tempo, para evitar abuso e ataques automatizados. |
 
-### 2.2 Resiliência
+### 3.2 Resiliência
 
 | ID | RNF | Descrição |
 |----|-----|-----------|
@@ -67,7 +67,7 @@ Estabelecem restrições e critérios de qualidade, desempenho e segurança para
 | RNF-18 | Consistência de Dados | Saldo, carteira e ordens sempre refletem o estado real, mesmo depois de uma falha. |
 | RNF-19 | Backup e Plano de Recuperação de Desastres | Além de se recuperar de falhas pontuais, o sistema tem backup e um plano para voltar do zero em caso de perda grave. |
 
-### 2.3 Qualidade
+### 3.3 Qualidade
 
 | ID | RNF | Descrição |
 |----|-----|-----------|
@@ -79,3 +79,34 @@ Estabelecem restrições e critérios de qualidade, desempenho e segurança para
 | RNF-25 | Rastreabilidade | Dá para acompanhar o caminho completo de uma ordem, do início ao fim. |
 | RNF-26 | Manutenibilidade | O código é organizado de um jeito que facilita manutenção e evolução no futuro. |
 | RNF-27 | Observabilidade | O sistema gera logs estruturados, métricas e alertas, permitindo perceber problemas antes que virem incidente grave. |
+
+## 4. Regras de Negócio
+
+| ID | Regra |
+|----|-------|
+| RN-01 | Ordens só são aceitas com o mercado aberto (dias úteis, horário de pregão). |
+| RN-02 | Só ativos cadastrados e ativos podem ser negociados. |
+| RN-03 | Compra exige saldo disponível para o valor da ordem mais taxas; o valor fica bloqueado até a execução ou o cancelamento. |
+| RN-04 | Venda exige quantidade disponível em carteira; venda a descoberto é proibida. |
+| RN-05 | Cada investidor tem limites de risco (valor por ordem e exposição total); ordem acima do limite é rejeitada. |
+| RN-06 | O preço de uma ordem limitada deve estar em até 10% da última cotação válida. |
+| RN-07 | Cotação válida tem no máximo 5 segundos; sem cotação válida, novas ordens do ativo são bloqueadas. |
+| RN-08 | Só o titular da conta envia, cancela ou consulta suas ordens. |
+| RN-09 | A ordem segue o ciclo criada → validada → enviada → (parcialmente) executada; pode ser rejeitada ou cancelada. Estados finais não mudam. |
+| RN-10 | O cancelamento é permitido antes da execução total; em ordem parcial, cancela-se só o restante. Se a bolsa executar antes de confirmar o cancelamento, vale a execução. |
+| RN-11 | Se a bolsa não responder, a ordem não é reenviada às cegas: seu estado é consultado antes. |
+| RN-12 | Cada ordem exige uma chave de idempotência; a mesma chave devolve a ordem original. |
+| RN-13 | A senha tem no mínimo 12 caracteres; 5 falhas de login bloqueiam a conta temporariamente. |
+| RN-14 | Todo evento de auditoria guarda ator, ação, data/hora, resultado e identificador de rastreio; se não puder ser gravado, a operação é cancelada. |
+| RN-15 | Falha na notificação não desfaz a operação; a mensagem é reenviada depois. |
+
+## 5. Restrições Técnicas
+
+| ID | Restrição |
+|----|-----------|
+| RT-01 | Ativos, contas, cotações e bolsa são simulados; não há dinheiro nem dados reais. |
+| RT-02 | Repositório Git privado, sem senhas, tokens, chaves de API ou dados sensíveis. |
+| RT-03 | Arquitetura distribuída, com processamento de ordens por fila de mensagens. |
+| RT-04 | Integrações externas (cotações, bolsa) por API com contrato definido, possíveis de simular em testes. |
+| RT-05 | Valores monetários em tipo decimal (nunca ponto flutuante) e datas em UTC. |
+| RT-06 | Equipe de até 3 integrantes; a documentação fica na pasta `docs/`. |
