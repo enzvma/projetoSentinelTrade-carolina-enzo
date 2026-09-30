@@ -1,7 +1,5 @@
 # SentinelTrade — Requisitos do Sistema
 
-Segue abaixo a resposta esperada para a identificação de requisitos funcionais e não-funcionais, com base no case da corretora fictícia Orion Capital.
-
 ## 1. Atores
 
 | Ator | Tipo | Papel |
