@@ -4,7 +4,7 @@ O Modelo de Casos de Uso (MCU) representa um refinamento dos requisitos funciona
 
 ## Identificação dos Atores
 
-Na terminologia da UML, qualquer elemento externo ao sistema que interage com 0 mesmo é, por definição, denominado ator.
+Na terminologia da UML, qualquer elemento externo ao sistema que interage com o mesmo é, por definição, denominado ator.
 
 | Ator | Tipo | Descrição |
 |----|----|-----------|
@@ -17,18 +17,25 @@ Na terminologia da UML, qualquer elemento externo ao sistema que interage com 0 
 
 ## Casos de Uso
 
-Por definição, é a especificação de uma se­quência completa de interações entre um sistema e um ou mais agentes externos a esse sistema.
+Por definição, é a especificação de uma sequência completa de interações entre um sistema e um ou mais agentes externos a esse sistema.
 
-## Casos de Uso
+Relacionamentos `<<include>>` e `<<extend>>` ligam apenas casos de uso entre si; a ligação com os atores é uma associação simples.
 
-| Caso | Categoria | Ator(es) | Relacionamento | Descrição |
-|---|---|---|---|---|
-| **Autenticar usuário** | Segurança | Investidor, Administrador/Gestor | Inclui: MFA | Permite ao usuário acessar o SentinelTrade por meio de autenticação com múltiplos fatores. |
-| **Consultar conta e carteira** | Consulta | Investidor, Administrador/Gestor | — | Consultar dados da conta, saldo, carteira, ativos e limites financeiros. |
-| **Consultar cotações** | Consulta | Investidor | Inclui: Provedor de Cotações | Consultar as cotações dos ativos disponíveis para negociação, obtidas de um provedor externo. |
-| **Enviar ordem** | Negociação | Investidor | Inclui: Validar ordem e transmitir ordem | Permite ao investidor enviar uma ordem de compra ou venda de ações, ETFs ou fundos imobiliários. |
-| **Validar ordem** | Validação | — | Inclui: Enviar ordem | Verificar saldo, posição em carteira, limite de risco e situação do mercado antes da transmissão da ordem. |
-| **Transmitir ordem** | Integração | Bolsa/Corretora Simulada | Inclui: Enviar ordem e cancelar ordem | Transmitir a ordem para a Bolsa/Corretora Simulada e receber informações sobre seu processamento. |
-| **Cancelar ordem** | Negociação | Investidor | Inclui: Transmitir ordem | Permite ao investidor solicitar o cancelamento de uma ordem que ainda possa ser cancelada. |
-| **Consultar ordem** | Consulta | Investidor, Administrador/Gestor | — | Consultar informações e o estado atual de uma ordem. |
-| **Acompanhar ordem** | Monitoramento | Investidor, Administrador/Gestor | Inclui: Bolsa/Corretora Simulada | Acompanhar o ciclo de vida da ordem, incluindo envio, execução, rejeição, cancelamento ou falha. |
+| ID | Caso | Categoria | Ator(es) | Relacionamento | Descrição |
+|---|---|---|---|---|---|
+| UC-01 | **Autenticar usuário** | Segurança | Investidor, Administrador/Gestor, Auditor | Inclui: UC-02 | Permite ao usuário acessar o SentinelTrade por meio de autenticação com múltiplos fatores. |
+| UC-02 | **Validar segundo fator** | Segurança | Serviço de Autenticação/MFA | Incluído por: UC-01 | Confirma o segundo fator de autenticação do usuário. |
+| UC-03 | **Cadastrar investidor** | Cadastro | Administrador/Gestor | Inclui: UC-15 | Cadastra um novo investidor e sua conta na plataforma. |
+| UC-04 | **Gerir contas e limites financeiros** | Cadastro | Administrador/Gestor | Inclui: UC-15 | Mantém contas, saldo e limites financeiros e de risco dos investidores. |
+| UC-05 | **Consultar conta e carteira** | Consulta | Investidor, Administrador/Gestor | — | Consultar dados da conta, saldo, carteira, ativos e limites financeiros. |
+| UC-06 | **Receber cotações** | Cotações | Provedor de Cotações | — | Recebe e armazena as cotações dos ativos em tempo quase real. |
+| UC-07 | **Consultar cotações** | Consulta | Investidor | — | Consultar as cotações dos ativos disponíveis para negociação, obtidas de um provedor externo. |
+| UC-08 | **Enviar ordem** | Negociação | Investidor | Inclui: UC-09, UC-10, UC-13, UC-15 | Permite ao investidor enviar uma ordem de compra ou venda de ações, ETFs ou fundos imobiliários. |
+| UC-09 | **Validar ordem** | Validação | — | Incluído por: UC-08 | Verificar saldo, posição em carteira, limite de risco e situação do mercado antes da transmissão da ordem. |
+| UC-10 | **Transmitir ordem** | Integração | Bolsa/Corretora Simulada | Incluído por: UC-08, UC-11 · Estendido por: UC-14 | Transmitir a ordem (ou o cancelamento) para a Bolsa/Corretora Simulada e receber informações sobre seu processamento. |
+| UC-11 | **Cancelar ordem** | Negociação | Investidor | Inclui: UC-10, UC-13, UC-15 | Permite ao investidor solicitar o cancelamento de uma ordem que ainda possa ser cancelada. |
+| UC-12 | **Acompanhar ordem e histórico** | Monitoramento | Investidor, Administrador/Gestor | — | Acompanhar o estado e o ciclo de vida da ordem (envio, execução, rejeição, cancelamento ou falha) e consultar o histórico de operações. |
+| UC-13 | **Notificar investidor** | Notificação | Serviço de Notificação | Incluído por: UC-08, UC-11 | Notifica o investidor sobre execução, rejeição, cancelamento ou falha da ordem. |
+| UC-14 | **Ativar modo restrito** | Resiliência | — | Estende: UC-10 | Ao detectar indisponibilidade de um componente crítico, bloqueia novas ordens e mantém consultas e cancelamentos. |
+| UC-15 | **Registrar log de auditoria** | Auditoria | — | Incluído por: UC-03, UC-04, UC-08, UC-11 (e demais ações críticas) | Registro imutável das ações críticas do sistema. |
+| UC-16 | **Consultar trilha de auditoria** | Auditoria | Auditor | — | Consulta o histórico de auditoria, sem poder de alteração. |
