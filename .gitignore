@@ -1,0 +1,15 @@
+# Segredos (RNF-09)
+.env
+.env.*
+
+# Dependências e build
+.venv/
+venv/
+
+# IDE
+.vscode/
+
+# Logs, dados locais e cobertura
+*.log
+logs/
+data/
