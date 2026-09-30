@@ -14,22 +14,6 @@ Segue abaixo a resposta esperada para a identificação de requisitos funcionais
 | Serviço de Notificação | Sistema externo | Entrega as notificações ao investidor |
 | Serviço de Autenticação/MFA | Sistema externo | Valida o segundo fator de autenticação |
 
-# SentinelTrade — Requisitos do Sistema
-
-Segue abaixo a resposta esperada para a identificação de requisitos funcionais e não-funcionais, com base no case da corretora fictícia Orion Capital.
-
-## 1. Atores
-
-| Ator | Tipo | Papel |
-|---|---|---|
-| Investidor | Humano | Consulta cotações e carteira, envia e cancela ordens, acompanha status e histórico |
-| Administrador/Gestor | Humano | Administra usuários, contas e limites financeiros |
-| Auditor | Humano | Consulta a trilha de auditoria (somente leitura) |
-| Provedor de Cotações | Sistema externo | Envia cotações em tempo quase real |
-| Bolsa/Corretora Simulada | Sistema externo | Recebe ordens e devolve execução, rejeição e cancelamento |
-| Serviço de Notificação | Sistema externo | Entrega as notificações ao investidor |
-| Serviço de Autenticação/MFA | Sistema externo | Valida o segundo fator de autenticação |
-
 ## 2. Requisitos Funcionais (RF)
 
 Definem as funcionalidades específicas que o sistema deve realizar.
