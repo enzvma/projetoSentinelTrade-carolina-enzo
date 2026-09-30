@@ -2,7 +2,7 @@ SentinelTrade - Diagrama de Casos de Uso
 
 O Modelo de Casos de Uso (MCU) representa um refinamento dos requisitos funcionais do sistema em desenvolvimento, sendo o diagrama de casos de uso a ferramenta da UML a ser utilizada. A construção desse modelo envolve a definição de diversos componentes: casos de uso, atores e rela­cionamentos entre eles.
 
-##Identificação dos Atores
+## Identificação dos Atores
 
 Na terminologia da UML, qualquer elemento externo ao sistema que interage com 0 mesmo é, por definição, denominado ator.
 
@@ -15,7 +15,7 @@ Na terminologia da UML, qualquer elemento externo ao sistema que interage com 0 
 | **Serviço de Notificação** | Sistema Externo | Serviço responsável por enviar notificações ao investidor sobre execução, rejeição, cancelamento ou falha das ordens. |
 | **Serviço de Autenticação/MFA** | Sistema Externo | Sistema ou serviço utilizado para autenticar o usuário por meio de múltiplos fatores de autenticação. |
 
-##Casos de Uso
+## Casos de Uso
 
 Por definição, é a especificação de uma se­quência completa de interações entre um sistema e um ou mais agentes externos a esse sistema.
 
@@ -23,12 +23,12 @@ Por definição, é a especificação de uma se­quência completa de interaçõ
 
 | Caso | Categoria | Ator(es) | Relacionamento | Descrição |
 |---|---|---|---|---|
-| **Autenticar usuário** | Segurança | Investidor, Administrador/Gestor | `<<include>>` MFA | Permite ao usuário acessar o SentinelTrade por meio de autenticação com múltiplos fatores. |
-| **Consultar conta e carteira** | Consulta | Investidor, Administrador/Gestor | — | Permite consultar dados da conta, saldo, carteira, ativos e limites financeiros. |
-| **Consultar cotações** | Consulta | Investidor | `<<include>>` Provedor de Cotações | Permite consultar as cotações dos ativos disponíveis para negociação, obtidas de um provedor externo. |
-| **Enviar ordem** | Negociação | Investidor | `<<include>>` Validar ordem; `<<include>>` Transmitir ordem | Permite ao investidor enviar uma ordem de compra ou venda de ações, ETFs ou fundos imobiliários. |
-| **Validar ordem** | Validação | — | `<<include>>` Enviar ordem | Verifica saldo, posição em carteira, limite de risco e situação do mercado antes da transmissão da ordem. |
-| **Transmitir ordem** | Integração | Bolsa/Corretora Simulada | `<<include>>` Enviar ordem; `<<include>>` Cancelar ordem | Transmite a ordem para a Bolsa/Corretora Simulada e recebe informações sobre seu processamento. |
-| **Cancelar ordem** | Negociação | Investidor | `<<include>>` Transmitir ordem | Permite ao investidor solicitar o cancelamento de uma ordem que ainda possa ser cancelada. |
-| **Consultar ordem** | Consulta | Investidor, Administrador/Gestor | — | Permite consultar informações e o estado atual de uma ordem. |
-| **Acompanhar ordem** | Monitoramento | Investidor, Administrador/Gestor | `<<include>>` Bolsa/Corretora Simulada | Permite acompanhar o ciclo de vida da ordem, incluindo envio, execução, rejeição, cancelamento ou falha. |
+| **Autenticar usuário** | Segurança | Investidor, Administrador/Gestor | Inclui: MFA | Permite ao usuário acessar o SentinelTrade por meio de autenticação com múltiplos fatores. |
+| **Consultar conta e carteira** | Consulta | Investidor, Administrador/Gestor | — | Consultar dados da conta, saldo, carteira, ativos e limites financeiros. |
+| **Consultar cotações** | Consulta | Investidor | Inclui: Provedor de Cotações | Consultar as cotações dos ativos disponíveis para negociação, obtidas de um provedor externo. |
+| **Enviar ordem** | Negociação | Investidor | Inclui: Validar ordem e transmitir ordem | Permite ao investidor enviar uma ordem de compra ou venda de ações, ETFs ou fundos imobiliários. |
+| **Validar ordem** | Validação | — | Inclui: Enviar ordem | Verificar saldo, posição em carteira, limite de risco e situação do mercado antes da transmissão da ordem. |
+| **Transmitir ordem** | Integração | Bolsa/Corretora Simulada | Inclui: Enviar ordem e cancelar ordem | Transmitir a ordem para a Bolsa/Corretora Simulada e receber informações sobre seu processamento. |
+| **Cancelar ordem** | Negociação | Investidor | Inclui: Transmitir ordem | Permite ao investidor solicitar o cancelamento de uma ordem que ainda possa ser cancelada. |
+| **Consultar ordem** | Consulta | Investidor, Administrador/Gestor | — | Consultar informações e o estado atual de uma ordem. |
+| **Acompanhar ordem** | Monitoramento | Investidor, Administrador/Gestor | Inclui: Bolsa/Corretora Simulada | Acompanhar o ciclo de vida da ordem, incluindo envio, execução, rejeição, cancelamento ou falha. |
