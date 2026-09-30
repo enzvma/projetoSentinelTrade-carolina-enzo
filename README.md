@@ -35,6 +35,14 @@ O **SentinelTrade** é uma plataforma distribuída, segura e tolerante a falhas 
 Principais objetivos: **nenhuma ordem duplicada, nenhuma ordem aceita perdida, nenhuma operação sem rastro auditável**.
 
 ### Escopo
-Dentro: autenticação com MFA, cadastro de investidores, ativos e limites, cotações, ordens (compra, venda, alteração, cancelamento), validações, integração com bolsa simulada, ciclo de vida da ordem, carteira/saldo, histórico, notificações, auditoria imutável.
+Dentro: autenticação com MFA, cadastro de investidores, ativos e limites, cotações, ordens (compra, venda, cancelamento), validações, integração com bolsa simulada, ciclo de vida da ordem, carteira/saldo, histórico, notificações, auditoria imutável.
 
 Fora: bolsa real, dinheiro real, liquidação/custódia real, derivativos e renda fixa, análise gráfica/recomendação de investimentos.
+
+## Tecnologias
+
+Ainda serão decididas.
+
+## Instruções de execução
+
+Não há código para rodar.
