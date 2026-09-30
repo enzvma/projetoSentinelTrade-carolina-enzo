@@ -110,3 +110,46 @@ Estabelecem restrições e critérios de qualidade, desempenho e segurança para
 | RT-04 | Integrações externas (cotações, bolsa) por API com contrato definido, possíveis de simular em testes. |
 | RT-05 | Valores monetários em tipo decimal (nunca ponto flutuante) e datas em UTC. |
 | RT-06 | Equipe de até 3 integrantes; a documentação fica na pasta `docs/`. |
+
+## 6. Matriz de Rastreabilidade
+
+Os casos de uso (UC) estão em [diagrama_casos_uso.md](diagrama_casos_uso.md). Implementação e teste são **planejados** e serão atualizados durante o desenvolvimento.
+
+### Requisitos funcionais
+
+| Requisito | Diagrama | Implementação (módulo) | Teste |
+|---|---|---|---|
+| RF-01 | UC-03, UC-04 | Cadastros | Teste de cadastro e validação de dados |
+| RF-02 | UC-01, UC-02 | Autenticação | Teste de login com MFA e bloqueio |
+| RF-03 | UC-05 | Carteira | Teste de consulta de carteira |
+| RF-04 | UC-07 | Cotações | Teste de cotação atual e desatualizada |
+| RF-05 | UC-08 | Ordens | Teste de envio de ordem e de reenvio duplicado |
+| RF-06 | UC-11 | Ordens | Teste de cancelamento por estado |
+| RF-07 | UC-09 | Validação e risco | Teste de rejeição por saldo, posição, limite e mercado |
+| RF-08 | UC-12 | Ordens (máquina de estados) | Teste de transições de estado |
+| RF-09 | UC-13 | Notificações | Teste de envio e reenvio |
+| RF-10 | UC-12 | Ordens | Teste dos filtros do histórico |
+| RF-11 | UC-15, UC-16 | Auditoria | Teste de registro e imutabilidade |
+| RF-12 | UC-10, UC-14 | Integração com a bolsa | Teste com bolsa simulada (sucesso, timeout, rejeição) |
+| RF-13 | UC-10 | Carteira e saldo | Teste de saldo após execução parcial e total |
+| RF-14 | UC-06 | Cotações | Teste de cotação inválida e de provedor fora do ar |
+
+### Requisitos não-funcionais
+
+| Requisito | Diagrama | Implementação (módulo) | Teste |
+|---|---|---|---|
+| RNF-01, 02 | UC-01, UC-02 | Autenticação | Teste de hash e de MFA |
+| RNF-03, 21 | Todos os UCs | Controle de acesso | Teste de acesso por perfil |
+| RNF-04, 06 | — | Camada de API (respostas e erros) | Teste de resposta de erro e de exposição de dados |
+| RNF-05, 07 | UC-08 | Validação de entrada e acesso a dados | Teste com entradas maliciosas |
+| RNF-08, 14 | UC-08, UC-10 | Ordens (idempotência) | Teste de concorrência com a mesma chave |
+| RNF-09 | — | `.gitignore`, `.env.example` | Varredura de segredos (ex.: gitleaks) |
+| RNF-10 | Todos os UCs | Configuração de TLS e criptografia | Teste de conexão e inspeção do banco |
+| RNF-11 | UC-01, UC-08 | Limite de requisições | Teste de excesso de tentativas |
+| RNF-12, 13 | UC-10 | Cliente de integração | Teste com bolsa lenta e com falha |
+| RNF-15, 17, 18 | UC-10, UC-14 | Fila de mensagens e transações | Teste de queda do consumidor e de consistência |
+| RNF-16 | UC-14 | Modo restrito | Teste com bolsa e cotações fora do ar |
+| RNF-19 | — | Rotina de backup | Simulado de restauração |
+| RNF-20, 22, 25 | UC-15, UC-16 | Auditoria | Teste de reconstrução da trilha e de adulteração |
+| RNF-23, 24, 27 | — | Monitoramento | Teste de carga e alerta forçado |
+| RNF-26 | — | Estrutura modular | Análise estática e revisão |
