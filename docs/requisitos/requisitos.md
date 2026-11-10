@@ -1,18 +1,24 @@
-# SentinelTrade — Requisitos do Sistema
+# SentinelTrade: Requisitos do Sistema
 
-## 1. Atores
+## 1. Visão do Sistema
 
-| Ator | Tipo | Papel |
-|---|---|---|
-| Investidor | Humano | Consulta cotações e carteira, envia e cancela ordens, acompanha status e histórico |
-| Administrador/Gestor | Humano | Administra usuários, contas e limites financeiros |
-| Auditor | Humano | Consulta a trilha de auditoria (somente leitura) |
-| Provedor de Cotações | Sistema externo | Envia cotações em tempo quase real |
-| Bolsa/Corretora Simulada | Sistema externo | Recebe ordens e devolve execução, rejeição e cancelamento |
-| Serviço de Notificação | Sistema externo | Entrega as notificações ao investidor |
-| Serviço de Autenticação/MFA | Sistema externo | Valida o segundo fator de autenticação |
+O SentinelTrade é uma plataforma simulada de negociação de ativos financeiros. Ela permite que investidores autenticados acompanhem sua carteira, consultem cotações e realizem operações de compra e venda, respeitando saldo, posição disponível, limites de risco e regras de segurança.
 
-## 2. Requisitos Funcionais (RF)
+O sistema deverá garantir que as ordens sejam rastreáveis, que não sejam executadas de forma duplicada e que todos os eventos relevantes sejam registrados em auditoria.
+
+## 2. Atores Principais
+
+| Ator | Responsabilidade |
+|---|---|
+| Investidor | Consulta cotações, carteira, saldo, histórico e envia ou cancela ordens. |
+| Administrador/Gestor | Gerencia usuários, ativos, limites e parâmetros operacionais. |
+| Analista de Risco | Consulta e ajusta limites de risco, acompanha ordens bloqueadas ou rejeitadas. |
+| Corretora/Bolsa Simulada | Recebe ordens válidas e retorna informações sobre execução, rejeição ou falha. |
+| Provedor de Cotações | Fornece valores atualizados ou simulados dos ativos. |
+| Serviço de Notificação | Informa o investidor sobre eventos relevantes. |
+| Serviço de Auditoria | Mantém o registro de ações, decisões e alterações de estado. |
+
+## 3. Requisitos Funcionais (RF)
 
 Definem as funcionalidades específicas que o sistema deve realizar.
 
@@ -33,11 +39,11 @@ Definem as funcionalidades específicas que o sistema deve realizar.
 | RF-13 | Cálculo de Posição Financeira | Atualizar automaticamente o saldo e a carteira do investidor após cada operação. | Após execução (inclusive parcial), saldo e carteira refletem exatamente o executado. |
 | RF-14 | Recepção de Cotações | Receber e armazenar as cotações do provedor externo em tempo quase real. | Cotação inválida é descartada; se o provedor cair, mantém-se a última cotação marcada como desatualizada. |
 
-## 3. Requisitos Não-Funcionais (RNF)
+## 4. Requisitos Não-Funcionais (RNF)
 
 Estabelecem restrições e critérios de qualidade, desempenho e segurança para o sistema.
 
-### 3.1 Segurança
+### 4.1 Segurança
 
 | ID | RNF | Descrição |
 |----|-----|-----------|
@@ -53,7 +59,7 @@ Estabelecem restrições e critérios de qualidade, desempenho e segurança para
 | RNF-10 | Criptografia em Trânsito e Repouso | Dados sensíveis são criptografados tanto enquanto trafegam quanto enquanto armazenados. |
 | RNF-11 | Rate Limiting | O sistema limita tentativas de login e envio de ordens em curto intervalo de tempo, para evitar abuso e ataques automatizados. |
 
-### 3.2 Resiliência
+### 4.2 Resiliência
 
 | ID | RNF | Descrição |
 |----|-----|-----------|
@@ -66,7 +72,7 @@ Estabelecem restrições e critérios de qualidade, desempenho e segurança para
 | RNF-18 | Consistência de Dados | Saldo, carteira e ordens sempre refletem o estado real, mesmo depois de uma falha. |
 | RNF-19 | Backup e Plano de Recuperação de Desastres | Além de se recuperar de falhas pontuais, o sistema tem backup e um plano para voltar do zero em caso de perda grave. |
 
-### 3.3 Qualidade
+### 4.3 Qualidade
 
 | ID | RNF | Descrição |
 |----|-----|-----------|
@@ -79,7 +85,7 @@ Estabelecem restrições e critérios de qualidade, desempenho e segurança para
 | RNF-26 | Manutenibilidade | O código é organizado de um jeito que facilita manutenção e evolução no futuro. |
 | RNF-27 | Observabilidade | O sistema gera logs estruturados, métricas e alertas, permitindo perceber problemas antes que virem incidente grave. |
 
-## 4. Regras de Negócio
+## 5. Regras de Negócio
 
 | ID | Regra |
 |----|-------|
@@ -99,7 +105,7 @@ Estabelecem restrições e critérios de qualidade, desempenho e segurança para
 | RN-14 | Todo evento de auditoria guarda ator, ação, data/hora, resultado e identificador de rastreio; se não puder ser gravado, a operação é cancelada. |
 | RN-15 | Falha na notificação não desfaz a operação; a mensagem é reenviada depois. |
 
-## 5. Restrições Técnicas
+## 6. Restrições Técnicas
 
 | ID | Restrição |
 |----|-----------|
@@ -110,7 +116,7 @@ Estabelecem restrições e critérios de qualidade, desempenho e segurança para
 | RT-05 | Valores monetários em tipo decimal (nunca ponto flutuante) e datas em UTC. |
 | RT-06 | Equipe de até 3 integrantes; a documentação fica na pasta `docs/`. |
 
-## 6. Matriz de Rastreabilidade
+## 7. Matriz de Rastreabilidade
 
 Os casos de uso (UC) estão em [diagrama_casos_uso.md](diagrama_casos_uso.md). Implementação e teste são **planejados** e serão atualizados durante o desenvolvimento.
 
