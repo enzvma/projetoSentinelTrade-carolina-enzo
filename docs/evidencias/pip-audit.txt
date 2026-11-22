@@ -1,0 +1,5 @@
+# pip-audit --skip-editable  (2026-11-22)
+No known vulnerabilities found
+Name          Skip Reason
+------------- -------------------------------
+sentineltrade distribution marked as editable

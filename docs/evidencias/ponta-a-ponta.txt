@@ -1,0 +1,14 @@
+# Teste de ponta a ponta (2026-11-22) - API e processador em processos separados, dados simulados
+
+1. sentineltrade gerar-segredos; .env preenchido; sentineltrade criar-banco
+2. sentineltrade criar-usuario (Administrador e Investidora com saldo simulado de 5000.00)
+3. sentineltrade processar (terminal 1) e sentineltrade api (terminal 2)
+4. Administrador: login + MFA; PUT /admin/parametros PREGAO_DIAS=TODOS, PREGAO_ABERTURA=00:00, PREGAO_FECHAMENTO=23:59 -> 204
+5. Investidora: login + MFA
+   GET  /cotacoes/PETR4        -> preco 38.09, desatualizada=false
+   POST /ordens (COMPRA MERCADO 20 PETR4)       -> estado VALIDADA
+   GET  /ordens/1 (após o processador)          -> EXECUTADA 20/20, histórico CRIADA > VALIDADA > ENVIADA > EXECUTADA
+   GET  /conta/saldo           -> disponivel 4234.61, bloqueado 0.00  (5000.00 - 20 x 38.25 - taxa 0.39)
+   GET  /conta/carteira        -> PETR4 20 unidades, preço médio 38.25
+   GET  /conta/saldo sem token -> 401
+6. Processador: notificação de EXECUCAO entregue (log JSON com correlation_id)
