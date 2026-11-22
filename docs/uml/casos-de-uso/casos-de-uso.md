@@ -4,6 +4,8 @@ O Modelo de Casos de Uso (MCU) representa um refinamento dos requisitos funciona
 
 ![Diagrama de casos de uso do SentinelTrade](casos-de-uso.png)
 
+Fonte editável do diagrama: [casos-de-uso.py](casos-de-uso.py) (para regerar a imagem: `python docs/uml/casos-de-uso/casos-de-uso.py`, requer `matplotlib`).
+
 As descrições textuais dos casos de uso críticos estão em [descricoes-casos-criticos.md](descricoes-casos-criticos.md).
 
 ## Identificação dos Atores
