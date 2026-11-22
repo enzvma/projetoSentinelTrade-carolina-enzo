@@ -1,0 +1,26 @@
+// Máquina de estados da ordem (RN-17). Gerar a imagem: dot -Tpng estados-ordem.dot -o estados-ordem.png
+digraph estados {
+  graph [rankdir=LR, fontname="Helvetica", pad=0.3, nodesep=0.5, bgcolor="white"];
+  node  [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, fillcolor="#ffffff", color="#5b6577"];
+  edge  [fontname="Helvetica", fontsize=9, color="#5b6577"];
+  inicio [shape=circle, label="", width=0.2, style=filled, fillcolor="#1d2433"];
+  CRIADA; VALIDADA; ENVIADA; PARCIALMENTE_EXECUTADA [label="PARCIALMENTE\nEXECUTADA"];
+  EXECUTADA [fillcolor="#e3f3ec", color="#11704f"];
+  REJEITADA [fillcolor="#fbe9e5", color="#b3361f"];
+  CANCELADA [fillcolor="#eef0f4"];
+  inicio -> CRIADA [label="investidor envia"];
+  CRIADA -> VALIDADA [label="regras OK\n(bloqueia saldo/posição)"];
+  CRIADA -> REJEITADA [label="regra violada"];
+  CRIADA -> CANCELADA [label="cancelada"];
+  VALIDADA -> ENVIADA [label="fila → corretora"];
+  VALIDADA -> REJEITADA [label="corretora recusa"];
+  VALIDADA -> CANCELADA [label="cancelada"];
+  ENVIADA -> PARCIALMENTE_EXECUTADA [label="execução parcial"];
+  ENVIADA -> EXECUTADA [label="execução total"];
+  ENVIADA -> CANCELADA [label="cancelada"];
+  ENVIADA -> REJEITADA [label="corretora recusa"];
+  PARCIALMENTE_EXECUTADA -> PARCIALMENTE_EXECUTADA [label="nova execução"];
+  PARCIALMENTE_EXECUTADA -> EXECUTADA [label="restante executado"];
+  PARCIALMENTE_EXECUTADA -> CANCELADA [label="restante cancelado"];
+  {rank=same; EXECUTADA; CANCELADA; REJEITADA}
+}

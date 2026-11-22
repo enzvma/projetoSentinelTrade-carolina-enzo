@@ -1,0 +1,36 @@
+// Arquitetura do SentinelTrade. Gerar a imagem: dot -Tpng arquitetura.dot -o arquitetura.png
+digraph arquitetura {
+  graph [rankdir=LR, fontname="Helvetica", fontsize=12, nodesep=0.45, ranksep=0.6, pad=0.3, bgcolor="white"];
+  node  [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, fillcolor="#ffffff", color="#5b6577"];
+  edge  [fontname="Helvetica", fontsize=9, color="#5b6577"];
+
+  navegador [label="Navegador\n(HTML, CSS e JavaScript)", fillcolor="#e8ebfb"];
+
+  subgraph cluster_bff {
+    label="BFF  ·  sentineltrade bff (porta 8001)"; style="rounded,dashed"; color="#2e44c2";
+    bff [label="Sessão no servidor (cookie HttpOnly)\nProteção CSRF\nAgregação do painel por perfil\nTradução de estados, motivos e erros"];
+  }
+
+  subgraph cluster_api {
+    label="API  ·  sentineltrade api (porta 8000)"; style="rounded"; color="#1d2433";
+    api   [label="api/\nrotas, validação (Pydantic),\nJWT + MFA, perfis, limites"];
+    serv  [label="servicos/\ncasos de uso"];
+    dom   [label="dominio/ + regras/\nOrdem (estados), Conta,\nregras de validação (Strategy)"];
+    pers  [label="persistencia/\nrepositórios + unidade de trabalho"];
+    api -> serv -> dom; serv -> pers;
+  }
+
+  subgraph cluster_proc {
+    label="Processador  ·  sentineltrade processar"; style="rounded"; color="#1d2433";
+    proc [label="fila de ordens, cotações,\nnotificações, reconciliação"];
+  }
+
+  db [label="SQLite\n(ordens, auditoria com hash,\nfila, parâmetros)", shape=cylinder, fillcolor="#f2f4f7"];
+  integ [label="integracoes/ (simuladas)\nCorretora · Cotações · Notificação\ntempo limite + retentativa", fillcolor="#fbf0dc", color="#8f5600"];
+
+  navegador -> bff [label="HTTP + cookie\n+ X-CSRF-Token"];
+  bff -> api [label="HTTP + Bearer\n(token só no BFF)"];
+  pers -> db;
+  proc -> serv;
+  proc -> integ;
+}
