@@ -3,9 +3,14 @@ Trabalho Semestral - Projeto de Software
 
 > **Aviso:** o SentinelTrade opera exclusivamente com dados e operações **simulados**. Não há integração com bolsa real, dinheiro real nem dados reais de investidores.
 
-## Integrantes
-- Carolina Yamada - R.A.: 10741647
-- Enzo Vasconcellos - R.A.: 10736817
+## Integrantes e Participação
+
+| Integrante | R.A. | GitHub | Participação |
+|---|---|---|---|
+| Carolina Yamada | 10741647 | ychbr | Contexto e visão no README; documento de requisitos (RF e RNF) e revisões; diagrama e tabela de casos de uso; organização das pastas; matriz de rastreabilidade; dados iniciais do banco (`seed.sql`). |
+| Enzo Vasconcellos | 10736817 | enzvma | Criação do repositório; `.gitignore` e `.env.example`; correções dos requisitos; regras de negócio; descrição dos casos de uso críticos; estrutura do banco (`schema.sql`); tecnologias e instruções no README. |
+
+O detalhe de cada contribuição está no histórico de commits.
 
 ## Objetivo
 
@@ -80,6 +85,7 @@ SentinelTrade/
 │   │   └── casos-de-uso/
 │   │       ├── casos-de-uso.md       # diagrama, atores e casos de uso
 │   │       ├── casos-de-uso.png
+│   │       ├── casos-de-uso.py       # fonte editável do diagrama
 │   │       └── descricoes-casos-criticos.md
 │   └── evidencias/                   # prints e relatórios do andamento
 ├── src/                              # código-fonte (Python)
