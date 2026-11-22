@@ -6,6 +6,7 @@
     sentineltrade codigo-mfa --email ...   mostra o código atual do segundo fator (só fora de produção)
     sentineltrade processar [--uma-vez]    processa cotações, fila de ordens e notificações
     sentineltrade api [--porta 8000]       inicia a API em 127.0.0.1
+    sentineltrade bff [--porta 8001]       inicia a interface web (BFF) em 127.0.0.1
 """
 from __future__ import annotations
 
@@ -15,6 +16,8 @@ import secrets
 import sys
 import time
 from decimal import Decimal, InvalidOperation
+
+from pydantic import ValidationError
 
 from .config import obter_configuracao
 from .dominio.enums import Perfil
@@ -87,7 +90,15 @@ def _processar(args) -> int:
 
 def _api(args) -> int:
     import uvicorn
+    obter_configuracao()        # falha cedo, com mensagem clara, se o .env estiver incompleto
     uvicorn.run("sentineltrade.api.app:criar_app", factory=True, host="127.0.0.1", port=args.porta)
+    return 0
+
+
+def _bff(args) -> int:
+    import uvicorn
+    obter_configuracao()
+    uvicorn.run("sentineltrade.bff.app:criar_bff", factory=True, host="127.0.0.1", port=args.porta)
     return 0
 
 
@@ -104,11 +115,17 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("processar"); p.add_argument("--uma-vez", action="store_true")
     p.add_argument("--intervalo", type=float, default=1.0); p.set_defaults(func=_processar)
     p = sub.add_parser("api"); p.add_argument("--porta", type=int, default=8000); p.set_defaults(func=_api)
+    p = sub.add_parser("bff"); p.add_argument("--porta", type=int, default=8001); p.set_defaults(func=_bff)
     args = parser.parse_args(argv)
     try:
         return args.func(args)
     except ErroSentinel as exc:
         print(exc.mensagem_publica, file=sys.stderr)
+        return 1
+    except ValidationError as exc:      # configuração inválida no .env: mensagem curta, sem traceback
+        print("Configuração inválida no arquivo .env:", file=sys.stderr)
+        for erro in exc.errors():
+            print(f"  - {erro.get('msg', '').removeprefix('Value error, ')}", file=sys.stderr)
         return 1
     except KeyboardInterrupt:
         return 0
