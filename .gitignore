@@ -10,6 +10,9 @@ secrets/
 __pycache__/
 *.py[cod]
 .venv/
+*.egg-info/
+build/
+dist/
 venv/
 .pytest_cache/
 .coverage
