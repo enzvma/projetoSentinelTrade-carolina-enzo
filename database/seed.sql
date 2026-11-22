@@ -16,6 +16,7 @@ INSERT INTO parametros (chave, valor) VALUES
     ('PREGAO_ABERTURA',     '10:00'),
     ('PREGAO_FECHAMENTO',   '17:55'),
     ('PREGAO_FUSO',         'America/Sao_Paulo'),
+    ('PREGAO_DIAS',         'UTEIS'),
     ('COTACAO_IDADE_MAX_S', '5'),
     ('FAIXA_PRECO_PCT',     '10'),
     ('TAXA_OPERACAO_BPS',   '5');

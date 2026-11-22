@@ -69,7 +69,7 @@ CREATE INDEX ix_cotacoes_ativo_data ON cotacoes (ativo_id, data_hora DESC);
 
 CREATE TABLE parametros (
     chave          TEXT    PRIMARY KEY CHECK (chave IN (
-                       'PREGAO_ABERTURA', 'PREGAO_FECHAMENTO', 'PREGAO_FUSO',
+                       'PREGAO_ABERTURA', 'PREGAO_FECHAMENTO', 'PREGAO_FUSO', 'PREGAO_DIAS',
                        'COTACAO_IDADE_MAX_S', 'FAIXA_PRECO_PCT', 'TAXA_OPERACAO_BPS')),
     valor          TEXT    NOT NULL CHECK (length(valor) BETWEEN 1 AND 50),
     atualizado_em  TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
@@ -216,3 +216,14 @@ BEFORE DELETE ON log_auditoria
 BEGIN
     SELECT RAISE(ABORT, 'log de auditoria é imutável');
 END;
+
+-- ------------------------------------------------------------
+-- Estado do sistema: modo restrito (RNF-16), compartilhado entre API e processador da fila
+-- ------------------------------------------------------------
+CREATE TABLE estado_sistema (
+    id            INTEGER PRIMARY KEY CHECK (id = 1),
+    modo_restrito INTEGER NOT NULL DEFAULT 0 CHECK (modo_restrito IN (0, 1)),
+    motivo        TEXT    CHECK (motivo IS NULL OR length(motivo) <= 100),
+    atualizado_em TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+);
+INSERT INTO estado_sistema (id, modo_restrito) VALUES (1, 0);
