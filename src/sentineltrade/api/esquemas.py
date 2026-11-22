@@ -39,6 +39,12 @@ class MfaPendenteSaida(BaseModel):
     expira_em_segundos: int
 
 
+class UsuarioAtualSaida(BaseModel):
+    id: int
+    nome: str
+    perfil: str
+
+
 class AcessoSaida(BaseModel):
     access_token: str
     token_type: Literal["bearer"] = "bearer"
@@ -86,6 +92,7 @@ class TransicaoSaida(BaseModel):
 
 class OrdemSaida(BaseModel):
     id: int
+    conta_id: int
     ticker: str
     lado: str
     tipo: str
@@ -100,7 +107,7 @@ class OrdemSaida(BaseModel):
 
     @classmethod
     def de(cls, ordem) -> "OrdemSaida":
-        return cls(id=ordem.id, ticker=ordem.ticker, lado=ordem.lado.value, tipo=ordem.tipo.value,
+        return cls(id=ordem.id, conta_id=ordem.conta_id, ticker=ordem.ticker, lado=ordem.lado.value, tipo=ordem.tipo.value,
                    quantidade=ordem.quantidade, quantidade_executada=ordem.quantidade_executada,
                    preco=ordem.preco.como_decimal() if ordem.preco else None, estado=ordem.estado.value,
                    motivo=ordem.motivo, ordem_origem_id=ordem.ordem_origem_id, criada_em=ordem.criada_em,
@@ -143,6 +150,12 @@ class CotacaoSaida(BaseModel):
     variacao_percentual: Decimal | None
     data_hora: datetime | None
     desatualizada: bool
+
+
+class MercadoSaida(BaseModel):
+    aberto: bool
+    agora: datetime
+    parametros: dict[str, str]
 
 
 # ---- administração, risco e auditoria -------------------------------------------------------

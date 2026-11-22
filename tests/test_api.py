@@ -149,3 +149,16 @@ def test_cabecalhos_de_seguranca(cliente):
 def test_correlation_id_externo_invalido_e_substituido(cliente):
     r = cliente.get("/saude", headers={"X-Correlation-ID": "abc\r\nSet-Cookie: x=1"})
     assert "\n" not in r.headers["x-correlation-id"] and len(r.headers["x-correlation-id"]) == 32
+
+
+def test_ip_encaminhado_so_vale_vindo_de_proxy_confiavel(app, config):
+    from sentineltrade.api.app import criar_app as criar
+    cliente = TestClient(criar(config.model_copy(update={"trusted_proxies": ["testclient"]}), aplicacao=app))
+    corpo = {"email": "ninguem@exemplo.com", "senha": "x"}
+    for i in range(config.rate_limit_login_per_min):     # cada cliente real tem o próprio limite
+        assert cliente.post("/auth/login", json=corpo, headers={"X-Forwarded-For": f"10.0.0.{i}"}).status_code == 401
+    direto = TestClient(criar_app(config, aplicacao=app))    # sem proxy confiável o cabeçalho é ignorado
+    for _ in range(config.rate_limit_login_per_min):
+        direto.post("/auth/login", json={"email": "outro@exemplo.com", "senha": "x"}, headers={"X-Forwarded-For": "10.9.9.9"})
+    assert direto.post("/auth/login", json={"email": "mais@exemplo.com", "senha": "x"},
+                       headers={"X-Forwarded-For": "10.9.9.8"}).status_code == 429

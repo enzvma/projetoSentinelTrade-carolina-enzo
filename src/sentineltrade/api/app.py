@@ -3,6 +3,7 @@
 Execução: uvicorn sentineltrade.api.app:criar_app --factory
 """
 
+import ipaddress
 import logging
 from decimal import Decimal
 from typing import Annotated, Literal
@@ -106,7 +107,15 @@ def criar_app(config: Configuracao | None = None, aplicacao: Aplicacao | None = 
     App = Annotated[Aplicacao, Depends(app_de)]
 
     def ip(request: Request) -> str:
-        return request.client.host if request.client else "desconhecido"
+        direto = request.client.host if request.client else "desconhecido"
+        encaminhado = request.headers.get("x-forwarded-for", "")
+        if direto in config.trusted_proxies and encaminhado:
+            candidato = encaminhado.split(",")[-1].strip()
+            try:
+                return str(ipaddress.ip_address(candidato))     # só aceita um IP válido
+            except ValueError:
+                pass
+        return direto
 
     # ---- saúde -------------------------------------------------------------------------------
     @app.get("/saude", tags=["sistema"])
@@ -128,7 +137,15 @@ def criar_app(config: Configuracao | None = None, aplicacao: Aplicacao | None = 
         token, validade = a.autenticacao.confirmar_mfa(dados.token_mfa, dados.codigo)
         return E.AcessoSaida(access_token=token, expira_em_segundos=validade)
 
+    @app.get("/auth/eu", response_model=E.UsuarioAtualSaida, tags=["autenticação"])
+    def eu(u: Autenticado):
+        return E.UsuarioAtualSaida(id=u.id, nome=u.nome, perfil=u.perfil.value)
+
     # ---- cotações, saldo e carteira (UC-06 a UC-08) ----------------------------------------
+    @app.get("/mercado", response_model=E.MercadoSaida, tags=["mercado"])
+    def mercado(u: Autenticado, a: App):
+        return E.MercadoSaida(**a.consultas.mercado())
+
     def _cotacao(c: dict) -> E.CotacaoSaida:
         return E.CotacaoSaida(ticker=c["ticker"], nome=c["nome"], tipo=c["tipo"], negociavel=c["negociavel"],
                               preco=c["preco"].como_decimal() if c["preco"] else None,

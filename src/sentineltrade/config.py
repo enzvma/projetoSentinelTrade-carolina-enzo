@@ -32,6 +32,11 @@ class Configuracao(BaseSettings):
     rate_limit_orders_per_min: int = Field(default=30, ge=1, le=10000)
     max_body_bytes: int = Field(default=16_384, ge=1024, le=1_048_576)
 
+    # Proxies cujo X-Forwarded-For a API aceita (o BFF roda na mesma máquina). Sem isso, todo
+    # login feito pelo BFF contaria como um único IP no limite de tentativas.
+    trusted_proxies: list[str] = Field(default=["127.0.0.1"], max_length=10)
+    api_url: str = Field(default="http://127.0.0.1:8000", pattern=r"^https?://[A-Za-z0-9.-]+(:[0-9]{1,5})?$")
+
     integration_timeout_ms: int = Field(default=3000, ge=100, le=60_000)
     integration_max_retries: int = Field(default=3, ge=1, le=10)
 

@@ -54,10 +54,12 @@ async def _responder_json(send, status: int, corpo: dict) -> None:
 class ProtecaoHttp:
     """Middleware ASGI: rastreio, limite de corpo (413) e cabeçalhos de segurança em toda resposta."""
 
-    def __init__(self, app, max_bytes: int, csp_documentacao: bool) -> None:
+    def __init__(self, app, max_bytes: int, csp_documentacao: bool,
+                 csp: str = "default-src 'none'; frame-ancestors 'none'") -> None:
         self.app = app
         self._max = max_bytes
         self._csp_documentacao = csp_documentacao
+        self._csp = csp.encode()
 
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
@@ -80,7 +82,7 @@ class ProtecaoHttp:
                       (b"x-frame-options", b"DENY"), (b"referrer-policy", b"no-referrer"),
                       (b"cache-control", b"no-store")]
                 if not (documentacao and self._csp_documentacao):
-                    h.append((b"content-security-policy", b"default-src 'none'; frame-ancestors 'none'"))
+                    h.append((b"content-security-policy", self._csp))
                 mensagem = {**mensagem, "headers": h}
             await send(mensagem)
 

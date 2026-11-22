@@ -33,6 +33,14 @@ class ServicoConsultas:
         return {"disponivel": conta.saldo_disponivel, "bloqueado": conta.saldo_bloqueado,
                 "total": conta.saldo_disponivel + conta.saldo_bloqueado}
 
+    def mercado(self) -> dict:
+        """Situação do pregão e parâmetros operacionais (não são dados sensíveis)."""
+        agora = self._relogio.agora()
+        with self._uow(somente_leitura=True) as uow:
+            parametros = uow.parametros.obter_todos()
+            aberto = carregar_parametros(uow).mercado_aberto(agora)
+        return {"aberto": aberto, "agora": agora, "parametros": parametros}
+
     def carteira(self, usuario) -> list[dict]:
         agora = self._relogio.agora()
         with self._uow(somente_leitura=True) as uow:
