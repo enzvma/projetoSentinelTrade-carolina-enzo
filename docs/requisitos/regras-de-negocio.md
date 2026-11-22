@@ -6,7 +6,7 @@ Regras aplicadas pelo sistema. Cada regra é referenciada nos [requisitos](requi
 
 | ID | Regra |
 |----|-------|
-| RN-01 | Ordens só são aceitas com o mercado aberto: dias úteis, das 10h às 17h55 (horário de Brasília). |
+| RN-01 | Ordens só são aceitas com o mercado aberto: dias úteis, das 10h às 17h55 (horário de Brasília). Dias e horário são parâmetros do Administrador (`PREGAO_DIAS`, `PREGAO_ABERTURA`, `PREGAO_FECHAMENTO`). |
 | RN-02 | Só ativos cadastrados e em situação ativa podem ser negociados. |
 | RN-06 | O preço de uma ordem limitada deve estar a no máximo 10% da última cotação válida. |
 | RN-07 | Uma cotação é válida por até 5 segundos; sem cotação válida, novas ordens daquele ativo são bloqueadas. |

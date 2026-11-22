@@ -32,8 +32,8 @@ Estados da ordem: Criada → Validada → Enviada → Parcialmente executada →
 
 **Fluxos alternativos:**
 - **FA1 – Chave repetida:** no passo 3, se a chave já existe, o sistema devolve a ordem original e não cria outra.
-- **FA2 – Dados inválidos:** no passo 2, se um campo é inválido (quantidade menor ou igual a zero, ativo com formato inválido, ordem limitada sem preço), a requisição é recusada com o motivo e nenhuma ordem é criada.
-- **FA3 – Ativo indisponível:** no passo 5, se o ativo não existe, está suspenso ou não tem cotação válida, a ordem passa a **Rejeitada** com o motivo; o investidor é notificado.
+- **FA2 – Dados inválidos:** no passo 2, se um campo é inválido (quantidade menor ou igual a zero, ativo inexistente ou com formato inválido, ordem limitada sem preço), a requisição é recusada com o motivo e nenhuma ordem é criada.
+- **FA3 – Ativo indisponível:** no passo 5, se o ativo está suspenso ou não tem cotação válida, a ordem passa a **Rejeitada** com o motivo; o investidor é notificado.
 - **FA4 – Mercado fechado ou preço fora da faixa:** no passo 5, a ordem passa a **Rejeitada** com o motivo.
 - **FA5 – Limite excedido:** no passo 5, se o valor ultrapassa o limite de risco, a ordem passa a **Rejeitada** com o motivo "limite de risco excedido".
 - **FA6 – Saldo insuficiente:** no passo 6, a ordem passa a **Rejeitada** com o motivo "saldo insuficiente"; nada é bloqueado.
