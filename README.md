@@ -45,11 +45,12 @@ Fora: bolsa real, dinheiro real, liquidação e custódia reais, derivativos e r
 | Linguagem | Python 3.12 ou superior |
 | Banco de dados | SQLite (relacional), estrutura em `database/schema.sql` e acesso com SQL parametrizado (`sqlite3`) |
 | API e validação de entradas | FastAPI, Pydantic e Uvicorn |
+| Interface web e BFF | HTML, CSS e JavaScript sem frameworks, servidos pelo BFF (FastAPI); httpx nas chamadas do BFF à API |
 | Segurança | argon2-cffi (hash de senha), pyotp (segundo fator TOTP), PyJWT (tokens), cryptography (cifra em repouso) |
 | Fuso horário do pregão | tzdata |
 | Testes | pytest e httpx |
 | Análise de segurança | bandit (código), pip-audit (dependências) e gitleaks (segredos), na esteira do GitHub Actions |
-| Documentação e diagramas | Markdown e UML |
+| Documentação e diagramas | Markdown, UML e Graphviz |
 
 As versões mínimas estão em `pyproject.toml`.
 
@@ -59,13 +60,22 @@ O código fica em `src/sentineltrade/`, separado em camadas:
 
 | Camada | Pasta | Responsabilidade |
 |---|---|---|
+| Interface web | `bff/` | BFF (Backend for Frontend) e telas do navegador: sessão no servidor, proteção CSRF, agregação dos dados de cada tela e mensagens em português |
 | Interface | `api/` | Rotas HTTP, autenticação, autorização por perfil, validação das entradas e erros sem detalhes internos |
 | Regras de negócio | `dominio/`, `regras/` | Entidades (Ordem com máquina de estados, Conta, Posição, Limite, Ativo) e regras de validação, uma classe por regra |
 | Casos de uso | `servicos/` | Envio, alteração e cancelamento de ordens, transmissão à corretora, autenticação, auditoria e administração |
 | Persistência | `persistencia/` | Repositórios (interfaces e implementação SQLite) e transações |
 | Integrações externas | `integracoes/` | Corretora, cotações e notificações simuladas, com tempo limite, retentativa e validação das respostas |
 
-Dois processos trabalham juntos: a **API** recebe as requisições e coloca as ordens válidas numa fila no banco; o **processador** lê a fila, fala com a corretora simulada, aplica execuções e envia as notificações.
+Três processos trabalham juntos:
+
+- o **BFF** serve a interface web e é o único ponto com que o navegador conversa. Ele guarda o token de acesso na sessão do servidor (o navegador só recebe um cookie `HttpOnly` e `SameSite=Strict`), exige um token anti-CSRF nas ações, junta numa chamada os dados de cada tela e traduz estados e motivos de rejeição;
+- a **API** valida as requisições, aplica as regras e coloca as ordens válidas numa fila no banco;
+- o **processador** lê a fila, fala com a corretora simulada, aplica execuções e envia as notificações.
+
+![Arquitetura](diagrams/arquitetura.png)
+
+O ciclo de vida da ordem está em [diagrams/estados-ordem.png](diagrams/estados-ordem.png). As fontes editáveis dos dois diagramas são os arquivos `.dot` da mesma pasta (Graphviz).
 
 ## Instruções de Execução
 
@@ -96,16 +106,19 @@ sentineltrade criar-usuario --nome "Investidor Demo" --email investidor@demo.com
 
 A senha é pedida no terminal. O comando mostra uma URI `otpauth://` para cadastrar o segundo fator num aplicativo autenticador. No ambiente simulado, o código atual também pode ser obtido com `sentineltrade codigo-mfa --email investidor@demo.com`.
 
-**4. Subir o sistema** (dois terminais)
+**4. Subir o sistema** (três terminais, todos com o ambiente virtual ativado)
 
 ```bash
 sentineltrade processar         # terminal 1: cotações, fila de ordens e notificações
 sentineltrade api               # terminal 2: API em http://127.0.0.1:8000
+sentineltrade bff               # terminal 3: interface web em http://127.0.0.1:8001
 ```
 
-A documentação interativa da API fica em http://127.0.0.1:8000/docs. O fluxo é: `POST /auth/login` → `POST /auth/mfa` → usar o `access_token` (botão *Authorize*) nas demais rotas.
+Abra http://127.0.0.1:8001 no navegador e entre com e-mail, senha e o código de 6 dígitos. Cada perfil vê a sua tela: o investidor envia, acompanha, altera e cancela ordens; o administrador ajusta o pregão, os ativos e os usuários; o analista de risco define limites; o auditor consulta e verifica a trilha.
 
-> Pela RN-01, ordens só são aceitas em dias úteis, das 10h às 17h55. Para demonstrar fora desse horário, o Administrador pode ajustar os parâmetros `PREGAO_DIAS` (`TODOS`), `PREGAO_ABERTURA` e `PREGAO_FECHAMENTO` em `PUT /admin/parametros/{chave}`; a alteração fica registrada na auditoria.
+A documentação interativa da API continua em http://127.0.0.1:8000/docs.
+
+> Pela RN-01, ordens só são aceitas em dias úteis, das 10h às 17h55. Para demonstrar fora desse horário, o Administrador muda, na tela *Pregão e parâmetros*, os dias para *Todos os dias* e o horário de abertura e fechamento; a alteração fica registrada na auditoria.
 
 **5. Testes e análise de segurança**
 
@@ -139,6 +152,7 @@ SentinelTrade/
 │   │       └── descricoes-casos-criticos.md
 │   └── evidencias/                   # resultados de testes e análises
 ├── src/sentineltrade/
+│   ├── bff/                          # BFF e interface web (static/)
 │   ├── api/                          # interface HTTP
 │   ├── dominio/                      # entidades e erros
 │   ├── regras/                       # regras de validação de ordens
@@ -150,7 +164,7 @@ SentinelTrade/
 ├── database/
 │   ├── schema.sql                    # estrutura do banco
 │   └── seed.sql                      # dados iniciais simulados
-└── diagrams/                         # demais diagramas UML
+└── diagrams/                         # arquitetura e estados da ordem (.dot e .png)
 ```
 
 ## Segurança do Repositório
