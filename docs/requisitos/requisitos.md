@@ -19,7 +19,7 @@ O sistema deverá garantir que as ordens sejam rastreáveis, que não sejam exec
 | Corretora/Bolsa Simulada | Sistema externo | Recebe ordens válidas e retorna execução, rejeição ou falha. |
 | Provedor de Cotações | Sistema externo | Fornece valores atualizados (simulados) dos ativos. |
 | Serviço de Notificação | Sistema externo | Informa o investidor sobre eventos relevantes. |
-| Serviço de Auditoria | Sistema de apoio | Mantém o registro imutável de ações, decisões e alterações de estado. |
+| Serviço de Auditoria | Sistema externo | Mantém o registro imutável de ações, decisões e alterações de estado. |
 
 ## 3. Requisitos Funcionais (RF)
 
