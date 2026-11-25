@@ -182,3 +182,19 @@ def test_alterar_ordem_cancela_original_e_valida_a_nova(app, investidor):
     assert saldo(app, conta_id)[1] == R("390.20")                  # só o bloqueio da nova ordem
     app.transmissao.processar_fila()                               # próxima rodada envia a nova
     assert estado(app, usuario, nova.id).estado is E.ENVIADA
+
+
+def test_cotacoes_simuladas_nao_derivam_numa_demonstracao_longa():
+    # 3 horas de cotações a cada segundo: o preço continua perto do inicial e nunca salta mais de 20%.
+    from conftest import PREGAO
+    from sentineltrade.integracoes.cotacoes import ProvedorCotacoesSimulado
+    from sentineltrade.relogio import RelogioFixo
+    provedor = ProvedorCotacoesSimulado(RelogioFixo(PREGAO), {"PETR4": Dinheiro(3850), "MXRF11": Dinheiro(1047)},
+                                        semente=7)
+    anterior = {"PETR4": 3850, "MXRF11": 1047}
+    for _ in range(3 * 3600):
+        for c in provedor.obter(["PETR4", "MXRF11"]):
+            assert abs(c["preco_centavos"] - anterior[c["ticker"]]) * 5 < anterior[c["ticker"]]
+            anterior[c["ticker"]] = c["preco_centavos"]
+    assert 0.8 * 3850 < anterior["PETR4"] < 1.2 * 3850
+    assert 0.8 * 1047 < anterior["MXRF11"] < 1.2 * 1047
