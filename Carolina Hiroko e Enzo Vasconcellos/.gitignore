@@ -1,0 +1,34 @@
+# Segredos (RNF-09): nunca versionar o .env real
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Banco de dados local (SQLite)
+*.db
+*.sqlite3
+
+# IDE e sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs e dados locais
+*.log
+logs/
+data/

@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sentineltrade"
+version = "0.1.0"
+description = "Plataforma simulada de negociação de ativos (trabalho acadêmico)"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "email-validator>=2.1",
+    "argon2-cffi>=23.1",
+    "pyotp>=2.9",
+    "pyjwt>=2.8",
+    "cryptography>=42",
+    "tzdata>=2024.1",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "bandit>=1.7", "pip-audit>=2.7"]
+
+[project.scripts]
+sentineltrade = "sentineltrade.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+sentineltrade = ["py.typed", "bff/static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.bandit]
+exclude_dirs = ["tests"]

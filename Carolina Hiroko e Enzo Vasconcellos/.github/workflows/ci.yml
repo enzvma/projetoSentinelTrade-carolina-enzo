@@ -1,0 +1,33 @@
+# Esteira de verificação: bloqueia o envio se testes, análise de código,
+# dependências vulneráveis ou segredos expostos forem encontrados.
+name: verificacao
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  testes-e-seguranca:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependências
+        run: pip install -e ".[dev]"
+      - name: Testes
+        run: pytest
+      - name: Análise estática de segurança (bandit)
+        run: bandit -r src
+      - name: Dependências com vulnerabilidades conhecidas (pip-audit)
+        run: pip-audit --skip-editable
+      - name: Segredos no repositório (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

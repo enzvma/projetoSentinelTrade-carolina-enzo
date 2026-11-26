@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SentinelTrade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/static/estilo.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="topo">
+    <div class="marca">
+      <svg class="marca-icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4Z"/><path class="marca-linha" d="m7 13 3-3 3 2 4-5"/></svg>
+      <span>SentinelTrade</span>
+    </div>
+    <div id="pregao" class="pregao" hidden></div>
+    <div id="usuario" class="usuario" hidden>
+      <span id="usuario-nome"></span>
+      <span id="usuario-perfil" class="perfil"></span>
+      <button id="sair" class="botao-texto" type="button">Sair</button>
+    </div>
+  </header>
+  <p class="faixa-demo">Ambiente de demonstração: cotações, contas e corretora são simulados.</p>
+
+  <main id="conteudo">
+    <!-- Entrada: senha e depois o segundo fator -->
+    <section id="tela-entrar" class="entrar" hidden>
+      <div class="entrar-texto">
+        <h1>Ordens de compra e venda com validação, rastreio e auditoria.</h1>
+        <p>Cada ordem passa por saldo, posição, limite de risco, horário do pregão e faixa de preço antes de ir para a corretora.</p>
+      </div>
+      <form id="form-login" class="painel entrar-form" novalidate>
+        <h2>Entrar</h2>
+        <label>E-mail <input name="email" type="email" autocomplete="username" maxlength="254" required></label>
+        <label>Senha <input name="senha" type="password" autocomplete="current-password" maxlength="128" required></label>
+        <button class="botao" type="submit">Continuar</button>
+      </form>
+      <form id="form-mfa" class="painel entrar-form" novalidate hidden>
+        <h2>Código de verificação</h2>
+        <p class="ajuda">Digite os 6 dígitos do seu aplicativo autenticador.</p>
+        <label>Código <input name="codigo" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required></label>
+        <button class="botao" type="submit">Entrar</button>
+        <button id="voltar-login" class="botao-texto" type="button">Usar outro e-mail</button>
+      </form>
+    </section>
+
+    <!-- Investidor -->
+    <section id="tela-INVESTIDOR" hidden>
+      <div class="saldo" aria-label="Saldo da conta">
+        <div><span class="rotulo">Disponível</span><strong id="saldo-disponivel">–</strong></div>
+        <div><span class="rotulo">Bloqueado em ordens</span><strong id="saldo-bloqueado">–</strong></div>
+        <div><span class="rotulo">Total</span><strong id="saldo-total">–</strong></div>
+      </div>
+
+      <div class="grade-boleta">
+        <form id="form-ordem" class="painel boleta" data-lado="COMPRA" novalidate>
+          <h2>Nova ordem</h2>
+          <div class="lados" role="radiogroup" aria-label="Lado da ordem">
+            <label class="lado lado-compra"><input type="radio" name="lado" value="COMPRA" checked> Comprar</label>
+            <label class="lado lado-venda"><input type="radio" name="lado" value="VENDA"> Vender</label>
+          </div>
+          <label>Ativo <select name="ticker" required></select></label>
+          <div class="linha-campos">
+            <label>Tipo
+              <select name="tipo">
+                <option value="LIMITADA">Limitada</option>
+                <option value="MERCADO">A mercado</option>
+              </select>
+            </label>
+            <label>Quantidade <input name="quantidade" type="number" min="1" max="1000000" step="1" value="10" required></label>
+          </div>
+          <label id="campo-preco">Preço (R$) <input name="preco" type="text" inputmode="decimal" maxlength="12" placeholder="0,00"></label>
+          <p id="estimativa" class="estimativa" aria-live="polite"></p>
+          <button id="botao-ordem" class="botao botao-lado" type="submit">Enviar ordem de compra</button>
+        </form>
+
+        <div class="painel">
+          <h2>Cotações</h2>
+          <p class="ajuda">Toque num ativo para preencher a ordem.</p>
+          <table class="tabela tabela-clicavel">
+            <thead><tr><th>Ativo</th><th class="num">Preço</th><th class="num">Variação</th></tr></thead>
+            <tbody id="cotacoes"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="painel">
+        <h2>Minhas ordens</h2>
+        <p class="ajuda">Atualiza sozinha enquanto a corretora processa. Abra uma ordem para ver o histórico, cancelar ou alterar.</p>
+        <div class="rolagem">
+          <table class="tabela tabela-clicavel">
+            <thead><tr><th>Nº</th><th>Ativo</th><th>Lado</th><th class="num">Executado</th><th class="num">Preço</th><th>Situação</th><th>Hora</th></tr></thead>
+            <tbody id="ordens"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="painel">
+        <h2>Carteira</h2>
+        <div class="rolagem">
+          <table class="tabela">
+            <thead><tr><th>Ativo</th><th class="num">Quantidade</th><th class="num">Preço médio</th><th class="num">Preço atual</th><th class="num">Valor</th></tr></thead>
+            <tbody id="carteira"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Administrador -->
+    <section id="tela-ADMINISTRADOR" hidden>
+      <div class="grade-dupla">
+        <form id="form-pregao" class="painel" novalidate>
+          <h2>Pregão e parâmetros</h2>
+          <div class="linha-campos">
+            <label>Abertura <input name="PREGAO_ABERTURA" type="time" required></label>
+            <label>Fechamento <input name="PREGAO_FECHAMENTO" type="time" required></label>
+          </div>
+          <div class="linha-campos">
+            <label>Fuso
+              <select name="PREGAO_FUSO"><option value="America/Sao_Paulo">Brasília</option><option value="UTC">UTC</option></select>
+            </label>
+            <label>Dias
+              <select name="PREGAO_DIAS"><option value="UTEIS">Dias úteis</option><option value="TODOS">Todos os dias (demonstração)</option></select>
+            </label>
+          </div>
+          <div class="linha-campos tres">
+            <label>Faixa de preço (%) <input name="FAIXA_PRECO_PCT" type="number" min="1" max="50"></label>
+            <label>Taxa (pontos-base) <input name="TAXA_OPERACAO_BPS" type="number" min="0" max="500"></label>
+            <label>Validade da cotação (s) <input name="COTACAO_IDADE_MAX_S" type="number" min="1" max="3600"></label>
+          </div>
+          <button class="botao" type="submit">Salvar parâmetros</button>
+        </form>
+
+        <div class="painel">
+          <h2>Ativos</h2>
+          <table class="tabela">
+            <thead><tr><th>Ativo</th><th class="num">Preço</th><th>Negociação</th></tr></thead>
+            <tbody id="ativos"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grade-dupla">
+        <form id="form-usuario" class="painel" novalidate>
+          <h2>Cadastrar usuário</h2>
+          <label>Nome <input name="nome" maxlength="100" required></label>
+          <label>E-mail <input name="email" type="email" maxlength="254" autocomplete="off" required></label>
+          <label>Senha inicial <input name="senha" type="password" minlength="12" maxlength="128" autocomplete="new-password" required></label>
+          <div class="linha-campos">
+            <label>Perfil
+              <select name="perfil">
+                <option value="INVESTIDOR">Investidor</option><option value="ANALISTA_RISCO">Analista de risco</option>
+                <option value="AUDITOR">Auditor</option><option value="ADMINISTRADOR">Administrador</option>
+              </select>
+            </label>
+            <label>Saldo inicial (R$) <input name="saldo_inicial" inputmode="decimal" value="0"></label>
+          </div>
+          <button class="botao" type="submit">Cadastrar usuário</button>
+          <div id="uri-mfa" class="segredo" hidden>
+            <p>Cadastre esta chave no aplicativo autenticador agora. Ela não aparece de novo.</p>
+            <code id="uri-mfa-texto"></code>
+            <button id="copiar-uri" class="botao-texto" type="button">Copiar</button>
+          </div>
+        </form>
+
+        <form id="form-credito" class="painel" novalidate>
+          <h2>Creditar saldo</h2>
+          <div class="linha-campos">
+            <label>Conta nº <input name="conta_id" type="number" min="1" required></label>
+            <label>Valor (R$) <input name="valor" inputmode="decimal" required></label>
+          </div>
+          <button class="botao" type="submit">Creditar</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Administrador e analista de risco: ordens de todas as contas e limites -->
+    <section id="tela-GESTAO" hidden>
+      <div class="grade-dupla">
+        <form id="form-limite" class="painel" novalidate>
+          <h2>Limites de risco</h2>
+          <label>Conta nº <input name="conta_id" type="number" min="1" required></label>
+          <div class="linha-campos">
+            <label>Máximo por ordem (R$) <input name="valor_maximo_ordem" inputmode="decimal" required></label>
+            <label>Exposição máxima (R$) <input name="exposicao_maxima" inputmode="decimal" required></label>
+          </div>
+          <button class="botao" type="submit">Salvar limites</button>
+        </form>
+        <div class="painel resumo-rejeicoes">
+          <h2>Rejeições recentes</h2>
+          <ul id="rejeicoes" class="lista-motivos"></ul>
+        </div>
+      </div>
+      <div class="painel">
+        <div class="titulo-com-filtro">
+          <h2>Ordens de todas as contas</h2>
+          <label class="filtro">Mostrar
+            <select id="filtro-ordens"><option value="">Todas</option><option value="REJEITADA">Só rejeitadas</option><option value="abertas">Só em aberto</option></select>
+          </label>
+        </div>
+        <div class="rolagem">
+          <table class="tabela tabela-clicavel">
+            <thead><tr><th>Nº</th><th>Conta</th><th>Ativo</th><th>Lado</th><th class="num">Executado</th><th class="num">Preço</th><th>Situação</th><th>Hora</th></tr></thead>
+            <tbody id="ordens-gestao"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Auditor -->
+    <section id="tela-AUDITOR" hidden>
+      <div class="painel verificacao">
+        <div>
+          <h2>Integridade da trilha</h2>
+          <p class="ajuda">Cada registro guarda o hash do anterior. Qualquer alteração no banco quebra a corrente.</p>
+        </div>
+        <button id="verificar" class="botao" type="button">Verificar trilha</button>
+        <p id="resultado-verificacao" class="resultado" aria-live="polite"></p>
+      </div>
+      <div class="painel">
+        <h2>Trilha de auditoria</h2>
+        <div class="rolagem">
+          <table class="tabela">
+            <thead><tr><th>Nº</th><th>Data e hora</th><th>Quem</th><th>Ação</th><th>Alvo</th><th>Resultado</th><th>Hash</th></tr></thead>
+            <tbody id="auditoria"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="detalhe" aria-labelledby="detalhe-titulo">
+    <div class="detalhe-topo">
+      <h2 id="detalhe-titulo"></h2>
+      <button id="fechar-detalhe" class="botao-texto" type="button" aria-label="Fechar">Fechar</button>
+    </div>
+    <p id="detalhe-resumo" class="detalhe-resumo"></p>
+    <ol id="trilho" class="trilho" aria-label="Ciclo de vida da ordem"></ol>
+    <p id="detalhe-motivo" class="motivo" hidden></p>
+    <h3>Histórico</h3>
+    <ul id="historico" class="historico"></ul>
+    <div id="acoes" class="acoes">
+      <button id="cancelar-ordem" class="botao botao-perigo" type="button">Cancelar ordem</button>
+      <form id="form-alterar" class="alterar" novalidate>
+        <label>Nova quantidade <input name="quantidade" type="number" min="1" max="1000000"></label>
+        <label id="alterar-preco">Novo preço (R$) <input name="preco" inputmode="decimal" maxlength="12"></label>
+        <button class="botao botao-secundario" type="submit">Alterar ordem</button>
+      </form>
+    </div>
+  </dialog>
+
+  <div id="avisos" class="avisos" role="status" aria-live="polite"></div>
+</body>
+</html>
