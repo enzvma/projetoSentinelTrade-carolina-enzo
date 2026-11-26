@@ -106,13 +106,23 @@ sentineltrade criar-usuario --nome "Investidor Demo" --email investidor@demo.com
 
 A senha é pedida no terminal. O comando mostra uma URI `otpauth://` para cadastrar o segundo fator num aplicativo autenticador. No ambiente simulado, o código atual também pode ser obtido com `sentineltrade codigo-mfa --email investidor@demo.com`.
 
-**4. Subir o sistema** (três terminais, todos com o ambiente virtual ativado)
+**4. Subir o sistema**
+
+O jeito mais simples é um comando só, que inicia os três processos no mesmo terminal (Ctrl+C encerra todos):
+
+```bash
+sentineltrade demo
+```
+
+Para ver os logs de cada processo separados, use três terminais, todos com o ambiente virtual ativado:
 
 ```bash
 sentineltrade processar         # terminal 1: cotações, fila de ordens e notificações
 sentineltrade api               # terminal 2: API em http://127.0.0.1:8000
 sentineltrade bff               # terminal 3: interface web em http://127.0.0.1:8001
 ```
+
+O código de 6 dígitos para entrar é mostrado, fora de produção, em outro terminal com `sentineltrade codigo-mfa --email <e-mail>`.
 
 Abra http://127.0.0.1:8001 no navegador e entre com e-mail, senha e o código de 6 dígitos. Cada perfil vê a sua tela: o investidor envia, acompanha, altera e cancela ordens; o administrador ajusta o pregão, os ativos e os usuários; o analista de risco define limites; o auditor consulta e verifica a trilha.
 

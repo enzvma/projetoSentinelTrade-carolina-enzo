@@ -7,6 +7,7 @@
     sentineltrade processar [--uma-vez]    processa cotações, fila de ordens e notificações
     sentineltrade api [--porta 8000]       inicia a API em 127.0.0.1
     sentineltrade bff [--porta 8001]       inicia a interface web (BFF) em 127.0.0.1
+    sentineltrade demo                     inicia processador, API e BFF juntos (Ctrl+C encerra os três)
 """
 from __future__ import annotations
 
@@ -102,6 +103,31 @@ def _bff(args) -> int:
     return 0
 
 
+def _demo(_args) -> int:
+    """Sobe os três processos do sistema num só terminal; Ctrl+C (ou a parada de um deles) encerra todos."""
+    import subprocess  # nosec B404 - executa só este mesmo programa, com argumentos fixos
+    obter_configuracao()
+    base = [sys.executable, "-m", "sentineltrade.cli"]
+    processos = [subprocess.Popen([*base, comando]) for comando in ("processar", "api", "bff")]  # nosec B603
+    print("SentinelTrade iniciando: abra http://127.0.0.1:8001 no navegador. Ctrl+C encerra tudo.")
+    try:
+        while all(p.poll() is None for p in processos):
+            time.sleep(0.5)
+        print("Um dos processos parou; encerrando os demais.", file=sys.stderr)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        for p in processos:
+            if p.poll() is None:
+                p.terminate()
+        for p in processos:
+            try:
+                p.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                p.kill()
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="sentineltrade", description="SentinelTrade (dados simulados)")
     sub = parser.add_subparsers(dest="comando", required=True)
@@ -116,6 +142,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--intervalo", type=float, default=1.0); p.set_defaults(func=_processar)
     p = sub.add_parser("api"); p.add_argument("--porta", type=int, default=8000); p.set_defaults(func=_api)
     p = sub.add_parser("bff"); p.add_argument("--porta", type=int, default=8001); p.set_defaults(func=_bff)
+    sub.add_parser("demo").set_defaults(func=_demo)
     args = parser.parse_args(argv)
     try:
         return args.func(args)
